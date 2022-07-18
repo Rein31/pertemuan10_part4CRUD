@@ -4,11 +4,9 @@ var expressLayouts = require('express-ejs-layouts');
 var morgan = require('morgan')
 const contact = require('./contact');
 const app = express();
-const {body,validationResult,check} = require('express-validator')
+const {validationResult,check} = require('express-validator')
 
 const port = 3000;
-
-
 
 // information using ejs
 app.set('view engine', 'ejs')
@@ -27,7 +25,7 @@ app.set('layout', 'layouts/main');
 // use morgan mode dev
 app.use(morgan('dev'))
 
-app.use(express.urlencoded())
+app.use(express.urlencoded({extended:true}))
 
 // app.use(bodyParser.json());
 
@@ -69,7 +67,7 @@ app.post('/contact',
             return true
     }),
     check('email').isEmail().withMessage("Email not valid"),
-    check('mobile').isMobilePhone().withMessage("Mobile phone not valid"),
+    check('mobile').isMobilePhone('id-ID').withMessage("Mobile phone not valid"),
     (req,res) =>{
         const result = validationResult(req)
         if (!result.isEmpty()) {
@@ -77,7 +75,7 @@ app.post('/contact',
             const mobile = req.body.mobile;
             const email = req.body.email;
             const oldContact = {name,mobile,email}
-            console.log(result);
+            // console.log(result);
             res.render('add-contact', {
                 title:"Add New Contact Page",
                 oldContact,
@@ -93,6 +91,8 @@ app.post('/contact',
         }
     
 })
+
+
  
 // delete contact
 app.post('/contact/delete', (req,res) => {
@@ -134,7 +134,7 @@ app.post('/contact/update/:idName',
             return true
     }),
     check('email').isEmail().withMessage("Email not valid"),
-    check('mobile').isMobilePhone().withMessage("Mobile phone not valid"),
+    check('mobile').isMobilePhone('id-ID').withMessage("Mobile phone not valid"),
     (req,res) =>{
         const result = validationResult(req)
         if (!result.isEmpty()) {
@@ -167,7 +167,7 @@ app.get("/contact", (req, res) => {
     // res.send("This is contact about!");
     // import folder data with file contact JSON
     const contactJson = require('./data/contacts.json');
-    console.log(contactJson);
+    // console.log(contactJson);
     res.render('contact', {
         title : "Contact Page",
         cont : contactJson,
